@@ -1,20 +1,95 @@
 {
-  "name": "My Web App",
-  "short_name": "App",
-  "start_url": "./index.html",
+  "name": "RupeeTrack - Expense & Wealth Tracker",
+  "short_name": "RupeeTrack",
+  "description": "Comprehensive Indian Expense, Income, and Savings Tracker Progressive Web App",
+  "start_url": "/",
+  "scope": "/",
+  "lang": "en-IN",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "display_override": [
+    "window-controls-overlay",
+    "tabbed",
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "categories": [
+    "finance",
+    "productivity",
+    "utilities"
+  ],
+  "iarc_rating_id": "e84b3e5d-2e23-4f11-a980-14145937a00e",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
   "icons": [
     {
-      "src": "https://via.placeholder.com/192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "https://via.placeholder.com/512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Transaction",
+      "short_name": "Add",
+      "description": "Quickly record a new income or expense item",
+      "url": "/?action=add",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "text/csv": [".csv"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+rupeetrack",
+      "url": "/?data=%s"
+    }
+  ],
+  "share_target": {
+    "action": "/import-csv",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "files": [
+        {
+          "name": "file",
+          "accept": [
+            "text/csv",
+            ".csv"
+          ]
+        }
+      ]
+    }
+  },
+  "scope_extensions": [
+    {
+      "origin": "*.rupeetrack.app"
     }
   ]
 }
