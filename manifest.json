@@ -1,4 +1,5 @@
 {
+  "id": "/",
   "name": "RupeeTrack - Expense & Wealth Tracker",
   "short_name": "RupeeTrack",
   "description": "Comprehensive Indian Expense, Income, and Savings Tracker Progressive Web App",
@@ -6,10 +7,11 @@
   "scope": "/",
   "lang": "en-IN",
   "dir": "ltr",
+  "orientation": "any",
   "display": "standalone",
   "display_override": [
-    "window-controls-overlay",
     "tabbed",
+    "window-controls-overlay",
     "standalone",
     "minimal-ui"
   ],
@@ -22,25 +24,25 @@
   ],
   "iarc_rating_id": "e84b3e5d-2e23-4f11-a980-14145937a00e",
   "prefer_related_applications": false,
-  "related_applications": [],
-  "launch_handler": {
-    "client_mode": "focus-existing"
-  },
-  "edge_side_panel": {
-    "preferred_width": 400
-  },
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.rupeetrack.app",
+      "id": "com.rupeetrack.app"
+    }
+  ],
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
   "shortcuts": [
@@ -51,12 +53,58 @@
       "url": "/?action=add",
       "icons": [
         {
-          "src": "icon-192.png",
-          "sizes": "192x192"
+          "src": "/shortcut-96.png",
+          "sizes": "96x96",
+          "type": "image/png"
         }
       ]
     }
   ],
+  "screenshots": [
+    {
+      "src": "/screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Desktop Dashboard"
+    },
+    {
+      "src": "/screenshot-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile Transaction Overview"
+    }
+  ],
+  "widgets": [
+    {
+      "name": "RupeeTrack Summary",
+      "short_name": "Summary",
+      "description": "Widget for quick balance overview",
+      "tag": "rupeetrack-summary",
+      "template": "widget-template",
+      "ms_ac_template": "/widgets/summary.json",
+      "data": "/widgets/data.json",
+      "type": "text/html",
+      "screenshots": [
+        {
+          "src": "/icon-512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        }
+      ],
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "/?action=new-note"
+  },
   "file_handlers": [
     {
       "action": "/",
@@ -88,6 +136,9 @@
     }
   },
   "scope_extensions": [
+    {
+      "origin": "https://rupeetrack.app"
+    },
     {
       "origin": "*.rupeetrack.app"
     }
