@@ -1,11 +1,14 @@
-const CACHE_NAME = 'rupeetrack-v1';
+const CACHE_NAME = 'rupeetrack-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
-  '/manifest.json'
+  '/manifest.json',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/shortcut-96.png'
 ];
 
-// Service Worker Install
+// Install Event: Pre-cache static assets for offline capability
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
@@ -13,7 +16,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Service Worker Activation & Cache Cleanup
+// Activate Event: Clear outdated caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -27,46 +30,70 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-First Strategy with Cache Fallback
+// Fetch Interceptor: Serve assets from cache when offline
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        // Fetch fresh copy in background to update cache asynchronously
+        fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, networkResponse));
+            }
+          })
+          .catch(() => {/* offline fallback */});
+        return cachedResponse;
+      }
+
+      return fetch(event.request)
+        .then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
+            return networkResponse;
+          }
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseToCache));
+          return networkResponse;
+        })
+        .catch(() => {
+          // Serve root fallback on navigation request when offline
+          if (event.request.mode === 'navigate') {
+            return caches.match('/');
+          }
+        });
+    })
   );
 });
 
-// Background Sync (Action Item Resolution)
+// Background Sync
 self.addEventListener('sync', (event) => {
   if (event.tag === 'sync-transactions') {
-    event.waitUntil(
-      Promise.resolve()
-    );
+    event.waitUntil(Promise.resolve());
   }
 });
 
-// Periodic Background Sync (Action Item Resolution)
+// Periodic Background Sync
 self.addEventListener('periodicsync', (event) => {
   if (event.tag === 'update-summary') {
-    event.waitUntil(
-      Promise.resolve()
-    );
+    event.waitUntil(Promise.resolve());
   }
 });
 
-// Push Notifications (Action Item Resolution)
+// Push Notifications
 self.addEventListener('push', (event) => {
   const data = event.data ? event.data.text() : 'RupeeTrack Financial Alert';
   const options = {
     body: data,
-    icon: 'icon-192.png',
-    badge: 'icon-192.png'
+    icon: '/icon-192.png',
+    badge: '/icon-192.png'
   };
 
-  event.waitUntil(
-    self.registration.showNotification('RupeeTrack', options)
-  );
+  event.waitUntil(self.registration.showNotification('RupeeTrack', options));
 });
 
-// Notification Click Listener
+// Notification Click Handler
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   event.waitUntil(
