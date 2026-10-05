@@ -10,7 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS CDN -->
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -24,53 +27,94 @@
             }
         }
     </script>
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Chart.js for Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+    <!-- jsPDF & AutoTable for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-20">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-24">
 
     <!-- Header Navigation -->
-    <header class="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
+    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-2">
-            <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-sm">RT</div>
+            <div class="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-sm shadow-md shadow-indigo-600/30">RT</div>
             <h1 class="font-bold text-lg text-white tracking-tight">RupeeTrack</h1>
         </div>
-        <button id="openModalBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-indigo-600/30">
-            <i class="fa-solid fa-plus"></i>
-            <span>Add</span>
-        </button>
+        
+        <div class="flex items-center space-x-2">
+            <!-- Add Button -->
+            <button id="openModalBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-indigo-600/30">
+                <i class="fa-solid fa-plus"></i>
+                <span>Add</span>
+            </button>
+        </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-md mx-auto px-4 pt-4 space-y-4">
+    <main class="max-w-md mx-auto px-4 pt-4 space-y-5">
 
-        <!-- Overview Cards -->
+        <!-- Export Actions Bar -->
+        <div class="bg-slate-800/80 border border-slate-700/60 p-3 rounded-2xl flex items-center justify-between">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1">
+                <i class="fa-solid fa-file-export text-indigo-400 mr-1"></i> Export Data
+            </span>
+            <div class="flex items-center space-x-2">
+                <button onclick="exportToExcel()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-file-excel"></i>
+                    <span>Excel</span>
+                </button>
+                <button onclick="exportToPDF()" class="bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-file-pdf"></i>
+                    <span>PDF</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Overview Stat Cards -->
         <div class="grid grid-cols-2 gap-3">
-            <!-- Income Card -->
+            <!-- Total Income -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Total Income</span>
                 <div class="text-xl font-extrabold text-emerald-400" id="totalIncome">₹0</div>
             </div>
-            <!-- Expense Card -->
+            <!-- Total Expense -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Total Expenses</span>
                 <div class="text-xl font-extrabold text-rose-400" id="totalExpense">₹0</div>
             </div>
-            <!-- Savings Card -->
+            <!-- Total Savings -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">Total Savings</span>
                 <div class="text-xl font-extrabold text-sky-400" id="totalSavings">₹0</div>
             </div>
-            <!-- Balance Card -->
+            <!-- Net Balance -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
-                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Remaining Balance</span>
+                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Net Balance</span>
                 <div class="text-xl font-extrabold text-indigo-400" id="netBalance">₹0</div>
             </div>
         </div>
 
+        <!-- Chart Analytics Section -->
+        <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
+                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
+                    <i class="fa-solid fa-chart-pie text-indigo-400"></i>
+                    <span>Financial Breakdown</span>
+                </h3>
+            </div>
+            <div class="relative h-48 w-full flex items-center justify-center">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+        </div>
+
         <!-- Recent Transactions Header -->
-        <div class="flex items-center justify-between pt-2">
+        <div class="flex items-center justify-between pt-1">
             <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recent Transactions</h2>
             <span class="text-xs text-slate-500" id="transactionCount">0 items</span>
         </div>
@@ -128,7 +172,7 @@
                 <!-- Title Input -->
                 <div>
                     <label for="title" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Title</label>
-                    <input type="text" id="title" placeholder="e.g., Grocery, Salary, Swiggy" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
+                    <input type="text" id="title" placeholder="e.g. Grocery, Salary, Swiggy" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
                 <!-- Amount Input -->
@@ -140,7 +184,7 @@
                 <!-- Category Input -->
                 <div>
                     <label for="category" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Category</label>
-                    <input type="text" id="category" placeholder="e.g., Food, Utilities, Investment" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
+                    <input type="text" id="category" placeholder="e.g. Food, Utilities, Shopping" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
                 <!-- Date Input -->
@@ -149,7 +193,7 @@
                     <input type="date" id="date" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
-                <!-- Submit Button -->
+                <!-- Save Button -->
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30">
                     Save Transaction
                 </button>
@@ -157,11 +201,11 @@
         </div>
     </div>
 
-    <!-- Application Logic Script -->
+    <!-- Application Script -->
     <script>
-        // State Management
         let transactions = JSON.parse(localStorage.getItem('rupeetrack_transactions')) || [];
         let selectedType = 'expense';
+        let chartInstance = null;
 
         // DOM Elements
         const modal = document.getElementById('transactionModal');
@@ -171,18 +215,13 @@
         const typeBtns = document.querySelectorAll('.type-btn');
         const listElement = document.getElementById('transactionList');
 
-        // Initialize App
+        // Initial Setup
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('date').valueAsDate = new Date();
             renderApp();
-            
-            // Register Service Worker if available
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('sw.js').catch(() => {});
-            }
         });
 
-        // Toggle Modal
+        // Modal Controls
         openModalBtn.addEventListener('click', () => openModal());
         closeModalBtn.addEventListener('click', () => closeModal());
 
@@ -195,209 +234,130 @@
                 document.getElementById('editTransactionId').value = editItem.id;
                 document.getElementById('title').value = editItem.title;
                 document.getElementById('amount').value = editItem.amount;
-                document.getElementById```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RupeeTrack - Expense, Income & Savings Tracker</title>
-    
-    <!-- Google Fonts Inter -->
-    <link rel="preconnect" href="[https://fonts.googleapis.com](https://fonts.googleapis.com)">
-    <link rel="preconnect" href="[https://fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
-    <link href="[https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap](https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap)" rel="stylesheet">
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)">
-    
-    <!-- Tailwind CSS -->
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
+                document.getElementById('category').value = editItem.category || '';
+                document.getElementById('paymentMode').value = editItem.paymentMode || '';
+                if (editItem.rawDate) document.getElementById('date').value = editItem.rawDate;
+                setType(editItem.type);
+            } else {
+                document.getElementById('modalTitle').textContent = 'Add Transaction';
+                document.getElementById('editTransactionId').value = '';
+                setType('expense');
             }
+            modal.classList.remove('hidden');
         }
-    </script>
-</head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 font-sans min-h-screen pb-10">
 
-    <!-- Header Bar -->
-    <header class="bg-indigo-600 text-white p-4 shadow-md sticky top-0 z-10 flex justify-between items-center">
-        <h1 class="text-xl font-extrabold flex items-center space-x-2">
-            <i class="fa-solid fa-wallet"></i>
-            <span>RupeeTrack</span>
-        </h1>
-    </header>
+        function closeModal() {
+            modal.classList.add('hidden');
+        }
 
-    <main class="max-w-md mx-auto p-4 space-y-6">
-
-        <!-- Add/Edit Transaction Form -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div class="p-4 border-b border-slate-100 dark:border-slate-700">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Add Transaction</h2>
-            </div>
-            
-            <form id="transactionForm" class="p-5 space-y-4">
-                <input type="hidden" id="editTransactionId" value="">
-
-                <!-- Type Selector -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">Type</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" class="type-btn border border-rose-500 bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="expense">
-                            <i class="fa-solid fa-circle-minus"></i>
-                            <span>Expense</span>
-                        </button>
-                        <button type="button" class="type-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="income">
-                            <i class="fa-solid fa-circle-plus"></i>
-                            <span>Income</span>
-                        </button>
-                        <button type="button" class="type-btn border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="savings">
-                            <i class="fa-solid fa-piggy-bank"></i>
-                            <span>Savings</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Payment Mode Dropdown -->
-                <div>
-                    <label for="paymentMode" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
-                    <select id="paymentMode" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                        <option value="" disabled selected>Select Payment Mode</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Credit Card">Credit Card</option>
-                        <option value="UPI">UPI</option>
-                    </select>
-                </div>
-
-                <!-- Title Input -->
-                <div>
-                    <label for="title" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">Title</label>
-                    <input type="text" id="title" placeholder="e.g. Grocery, Petrol, Rent" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                </div>
-
-                <!-- Amount Input -->
-                <div>
-                    <label for="amount" class="block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider mb-1.5">Amount (₹)</label>
-                    <input type="number" id="amount" step="0.01" placeholder="0.00" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" id="submitBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition">
-                    Save Transaction
-                </button>
-            </form>
-        </div>
-
-        <!-- Recent Transactions List -->
-        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-            <div class="p-4 border-b border-slate-100 dark:border-slate-700">
-                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recent Transactions</h2>
-            </div>
-            <div id="transactionList" class="divide-y divide-slate-100 dark:divide-slate-700/50">
-                <!-- Transactions render here -->
-            </div>
-        </div>
-
-    </main>
-
-    <script>
-        let transactions = JSON.parse(localStorage.getItem('rupeetrack_transactions')) || [];
-        let selectedType = 'expense';
-
-        const form = document.getElementById('transactionForm');
-        const titleInput = document.getElementById('title');
-        const amountInput = document.getElementById('amount');
-        const paymentModeSelect = document.getElementById('paymentMode');
-        const editIdInput = document.getElementById('editTransactionId');
-        const transactionList = document.getElementById('transactionList');
-        const typeBtns = document.querySelectorAll('.type-btn');
-
-        // Type Button Selector Logic
+        // Type Button Toggle
         typeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                typeBtns.forEach(b => {
-                    b.classList.remove('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40', 'text-rose-600', 'dark:text-rose-400');
-                    b.classList.add('border-slate-200', 'dark:border-slate-700', 'text-slate-600', 'dark:text-slate-400');
-                });
-                btn.classList.remove('border-slate-200', 'dark:border-slate-700', 'text-slate-600', 'dark:text-slate-400');
-                btn.classList.add('border-rose-500', 'bg-rose-50', 'dark:bg-rose-950/40', 'text-rose-600', 'dark:text-rose-400');
-                selectedType = btn.dataset.value;
-            });
+            btn.addEventListener('click', () => setType(btn.dataset.value));
         });
 
+        function setType(type) {
+            selectedType = type;
+            typeBtns.forEach(btn => {
+                if (btn.dataset.value === type) {
+                    btn.className = "type-btn border border-indigo-500 bg-indigo-950/50 text-indigo-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
+                } else {
+                    btn.className = "type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
+                }
+            });
+        }
+
         // Form Submit Handler
-        form.addEventListener('submit', (e) => {
+        transactionForm.addEventListener('submit', (e) => {
             e.preventDefault();
 
-            const editId = editIdInput.value;
-            const transactionData = {
+            const editId = document.getElementById('editTransactionId').value;
+            const dateInputVal = document.getElementById('date').value;
+            const formattedDate = dateInputVal ? new Date(dateInputVal).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN');
+
+            const itemData = {
                 id: editId ? Number(editId) : Date.now(),
-                title: titleInput.value.trim(),
-                amount: parseFloat(amountInput.value),
+                title: document.getElementById('title').value.trim(),
+                amount: parseFloat(document.getElementById('amount').value),
                 type: selectedType,
-                paymentMode: paymentModeSelect.value,
-                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+                category: document.getElementById('category').value.trim(),
+                paymentMode: document.getElementById('paymentMode').value,
+                date: formattedDate,
+                rawDate: dateInputVal
             };
 
             if (editId) {
-                transactions = transactions.map(t => t.id === Number(editId) ? transactionData : t);
-                editIdInput.value = '';
+                transactions = transactions.map(t => t.id === Number(editId) ? itemData : t);
             } else {
-                transactions.unshift(transactionData);
+                transactions.unshift(itemData);
             }
 
             saveAndRender();
-            form.reset();
-            paymentModeSelect.selectedIndex = 0;
+            closeModal();
         });
 
-        // Save & Render Function
         function saveAndRender() {
             localStorage.setItem('rupeetrack_transactions', JSON.stringify(transactions));
-            renderTransactions();
+            renderApp();
         }
 
-        // Render UI
-        function renderTransactions() {
+        function renderApp() {
+            renderTotals();
+            renderList();
+            renderChart();
+        }
+
+        // Totals Calculation
+        function renderTotals() {
+            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
+            const savings = transactions.filter(t => t.type === 'savings').reduce((sum, t) => sum + t.amount, 0);
+            const balance = income - expense - savings;
+
+            document.getElementById('totalIncome').textContent = `₹${income.toLocaleString('en-IN')}`;
+            document.getElementById('totalExpense').textContent = `₹${expense.toLocaleString('en-IN')}`;
+            document.getElementById('totalSavings').textContent = `₹${savings.toLocaleString('en-IN')}`;
+            document.getElementById('netBalance').textContent = `₹${balance.toLocaleString('en-IN')}`;
+            document.getElementById('transactionCount').textContent = `${transactions.length} items`;
+        }
+
+        // Render History List
+        function renderList() {
             if (transactions.length === 0) {
-                transactionList.innerHTML = `<div class="p-6 text-center text-sm text-slate-400">No transactions recorded yet.</div>`;
+                listElement.innerHTML = `
+                    <div class="p-8 text-center text-slate-500 bg-slate-800/40 rounded-2xl border border-slate-700/40">
+                        <i class="fa-solid fa-receipt text-3xl mb-2 block text-slate-600"></i>
+                        <p class="text-xs">No transactions recorded yet.</p>
+                    </div>`;
                 return;
             }
 
-            transactionList.innerHTML = transactions.map(t => {
+            listElement.innerHTML = transactions.map(t => {
                 const isExpense = t.type === 'expense';
-                const amountColor = isExpense ? 'text-rose-500' : 'text-emerald-500';
+                const isSavings = t.type === 'savings';
+                const colorClass = isExpense ? 'text-rose-400' : (isSavings ? 'text-sky-400' : 'text-emerald-400');
                 const sign = isExpense ? '-' : '+';
 
                 return `
-                    <div class="p-4 flex justify-between items-center hover:bg-slate-50 dark:hover:bg-slate-700/30 transition">
+                    <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl flex items-center justify-between hover:border-slate-600 transition">
                         <div class="space-y-1">
                             <div class="flex items-center space-x-2">
-                                <span class="font-bold text-sm text-slate-800 dark:text-slate-200">${t.title}</span>
-                                ${t.paymentMode ? `
-                                    <span class="text-[10px] font-semibold uppercase tracking-wider bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-600">
-                                        ${t.paymentMode}
-                                    </span>
-                                ` : ''}
+                                <span class="font-bold text-sm text-slate-100">${t.title}</span>
+                                ${t.paymentMode ? `<span class="text-[10px] font-semibold uppercase bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md border border-slate-600">${t.paymentMode}</span>` : ''}
                             </div>
-                            <div class="text-xs text-slate-400 dark:text-slate-500">${t.date} • ${t.type.toUpperCase()}</div>
+                            <div class="text-[11px] text-slate-400 flex items-center space-x-2">
+                                <span>${t.date}</span>
+                                <span>•</span>
+                                <span class="uppercase tracking-wider font-semibold text-slate-400">${t.category || t.type}</span>
+                            </div>
                         </div>
                         <div class="flex items-center space-x-3">
-                            <span class="font-extrabold text-sm ${amountColor}">
+                            <span class="font-extrabold text-sm ${colorClass}">
                                 ${sign}₹${t.amount.toLocaleString('en-IN')}
                             </span>
-                            <button onclick="editTransaction(${t.id})" class="text-slate-400 hover:text-indigo-500 text-xs">
+                            <button onclick="editItem(${t.id})" class="text-slate-400 hover:text-indigo-400 text-xs p-1">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
-                            <button onclick="deleteTransaction(${t.id})" class="text-slate-400 hover:text-rose-500 text-xs">
+                            <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-400 text-xs p-1">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -406,27 +366,139 @@
             }).join('');
         }
 
-        // Edit Handler
-        window.editTransaction = function(id) {
-            const t = transactions.find(item => item.id === id);
-            if (!t) return;
-
-            titleInput.value = t.title;
-            amountInput.value = t.amount;
-            paymentModeSelect.value = t.paymentMode || '';
-            editIdInput.value = t.id;
+        // Render Chart.js
+        function renderChart() {
+            const ctx = document.getElementById('analyticsChart').getContext('2d');
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            if (income === 0 && expense === 0 && savings === 0) {
+                ctx.clearRect(0, 0, 300, 200);
+                return;
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Income', 'Expense', 'Savings'],
+                    datasets: [{
+                        data: [income, expense, savings],
+                        backgroundColor: ['#10b981', '#f43f5e', '#0284c7'],
+                        borderWidth: 2,
+                        borderColor: '#0f172a'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 11, weight: '600' },
+                                boxWidth: 12,
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Edit Item
+        window.editItem = function(id) {
+            const t = transactions.find(item => item.id === id);
+            if (t) openModal(t);
         };
 
-        // Delete Handler
-        window.deleteTransaction = function(id) {
-            transactions = transactions.filter(t => t.id !== id);
-            saveAndRender();
+        // Delete Item
+        window.deleteItem = function(id) {
+            if (confirm("Delete this transaction?")) {
+                transactions = transactions.filter(t => t.id !== id);
+                saveAndRender();
+            }
         };
 
-        // Initial Load
-        renderTransactions();
+        // Export to Excel Function
+        window.exportToExcel = function() {
+            if (transactions.length === 0) {
+                alert("No transactions available to export.");
+                return;
+            }
+            const exportData = transactions.map((t, idx) => ({
+                "S.No": idx + 1,
+                "Date": t.date,
+                "Title": t.title,
+                "Type": t.type.toUpperCase(),
+                "Category": t.category || "General",
+                "Payment Mode": t.paymentMode || "N/A",
+                "Amount (INR)": t.amount
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "RupeeTrack Statement");
+            XLSX.writeFile(wb, `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.xlsx`);
+        };
+
+        // Export to PDF Function
+        window.exportToPDF = function() {
+            if (transactions.length === 0) {
+                alert("No transactions available to export.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Document Title
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(16);
+            doc.setTextColor(79, 70, 229);
+            doc.text("RupeeTrack - Statement", 14, 20);
+
+            doc.setFontSize(9);
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(100);
+            doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 14, 26);
+
+            // Summary Totals
+            const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+            const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+            const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
+
+            doc.setTextColor(50);
+            doc.text(`Income: Rs.${income.toLocaleString('en-IN')}  |  Expenses: Rs.${expense.toLocaleString('en-IN')}  |  Savings: Rs.${savings.toLocaleString('en-IN')}`, 14, 33);
+
+            // Table Data
+            const tableBody = transactions.map((t, idx) => [
+                idx + 1,
+                t.date,
+                t.title,
+                t.type.toUpperCase(),
+                t.category || "General",
+                t.paymentMode || "N/A",
+                `Rs. ${t.amount.toLocaleString('en-IN')}`
+            ]);
+
+            doc.autoTable({
+                startY: 38,
+                head: [['#', 'Date', 'Title', 'Type', 'Category', 'Mode', 'Amount']],
+                body: tableBody,
+                theme: 'grid',
+                headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 8 }
+            });
+
+            doc.save(`RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`);
+        };
     </script>
 </body>
 </html>
