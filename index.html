@@ -1,517 +1,191 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RupeeTrack - Expense, Income & Savings Tracker</title>
-    
-    <!-- Google Fonts Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>RupeeTrack - Expense Tracker</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- Chart.js for Visual Analytics -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- SheetJS for Excel Export -->
+    <!-- SheetJS (Excel Export) -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-
-    <!-- jsPDF & AutoTable for PDF Export -->
+    <!-- jsPDF & AutoTable (PDF Export) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-24">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen p-4 md:p-8">
 
-    <!-- App Opening Splash Screen -->
-    <div id="splashScreen" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
-        <div class="relative flex items-center justify-center mb-5">
-            <div class="w-24 h-24 rounded-3xl bg-indigo-600/20 border-2 border-indigo-500/40 flex items-center justify-center animate-pulse"></div>
-            <div class="absolute w-20 h-20 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-2xl shadow-indigo-600/50 animate-bounce">
-                <span class="text-white text-4xl font-black tracking-tight">₹</span>
+    <div class="max-w-4xl mx-auto space-y-6">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:items-center md:justify-between bg-indigo-600 text-white p-6 rounded-2xl shadow-lg">
+            <div>
+                <h1 class="text-2xl font-bold">RupeeTrack</h1>
+                <p class="text-indigo-200 text-sm">Personal Finance & Expense Manager</p>
             </div>
-        </div>
-        <h1 class="text-2xl font-extrabold text-white tracking-tight">RupeeTrack</h1>
-        <p class="text-xs text-slate-400 mt-1 font-medium">Smart Expense & Wealth Tracker</p>
-    </div>
-
-    <!-- Header Navigation -->
-    <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
-        <div class="flex items-center space-x-2.5">
-            <!-- Rupee Icon App Branding -->
-            <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-indigo-600/30">₹</div>
-            <h1 class="font-extrabold text-lg text-white tracking-tight">RupeeTrack</h1>
-        </div>
-        
-        <div class="flex items-center space-x-2">
-            <!-- Add Button -->
-            <button id="openModalBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5 shadow-lg shadow-indigo-600/30">
-                <i class="fa-solid fa-plus"></i>
-                <span>Add</span>
-            </button>
-        </div>
-    </header>
-
-    <!-- Main Container -->
-    <main class="max-w-md mx-auto px-4 pt-4 space-y-5">
-
-        <!-- Export Actions Bar -->
-        <div class="bg-slate-800/80 border border-slate-700/60 p-3 rounded-2xl flex items-center justify-between">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider pl-1">
-                <i class="fa-solid fa-file-export text-indigo-400 mr-1"></i> Export Data
-            </span>
-            <div class="flex items-center space-x-2">
-                <button onclick="exportToExcel()" class="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-file-excel"></i>
-                    <span>Excel</span>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <button onclick="exportToExcel()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
+                    Export Excel
                 </button>
-                <button onclick="exportToPDF()" class="bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 px-2.5 py-1.5 rounded-xl text-xs font-bold transition flex items-center space-x-1.5">
-                    <i class="fa-solid fa-file-pdf"></i>
-                    <span>PDF</span>
+                <button onclick="exportToPDF()" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-semibold shadow transition">
+                    Export PDF
                 </button>
             </div>
-        </div>
+        </header>
 
-        <!-- Overview Stat Cards -->
-        <div class="grid grid-cols-2 gap-3">
-            <!-- Total Income -->
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
-                <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Total Income</span>
-                <div class="text-xl font-extrabold text-emerald-400" id="totalIncome">₹0</div>
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Income</span>
+                <p id="totalIncome" class="text-xl font-bold text-emerald-600 mt-1">Rs. 0</p>
             </div>
-            <!-- Total Expense -->
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
-                <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Total Expenses</span>
-                <div class="text-xl font-extrabold text-rose-400" id="totalExpense">₹0</div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Expenses</span>
+                <p id="totalExpense" class="text-xl font-bold text-rose-600 mt-1">Rs. 0</p>
             </div>
-            <!-- Total Savings -->
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
-                <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">Total Savings</span>
-                <div class="text-xl font-extrabold text-sky-400" id="totalSavings">₹0</div>
-            </div>
-            <!-- Net Balance -->
-            <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
-                <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Net Balance</span>
-                <div class="text-xl font-extrabold text-indigo-400" id="netBalance">₹0</div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Savings</span>
+                <p id="totalSavings" class="text-xl font-bold text-indigo-600 mt-1">Rs. 0</p>
             </div>
         </div>
 
-        <!-- Chart Analytics Section -->
-        <div class="bg-slate-800/60 border border-slate-700/60 p-4 rounded-2xl space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-                <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center space-x-1.5">
-                    <i class="fa-solid fa-chart-pie text-indigo-400"></i>
-                    <span>Financial Breakdown</span>
-                </h3>
-            </div>
-            <div class="relative h-48 w-full flex items-center justify-center">
-                <canvas id="analyticsChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Recent Transactions Header -->
-        <div class="flex items-center justify-between pt-1">
-            <h2 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Recent Transactions</h2>
-            <span class="text-xs text-slate-500" id="transactionCount">0 items</span>
-        </div>
-
-        <!-- Transaction List -->
-        <div id="transactionList" class="space-y-2.5">
-            <!-- Dynamic transactions load here -->
-        </div>
-    </main>
-
-    <!-- Add/Edit Transaction Modal -->
-    <div id="transactionModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
-            
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                <h3 class="font-bold text-slate-100 text-sm" id="modalTitle">Add Transaction</h3>
-                <button id="closeModalBtn" class="text-slate-400 hover:text-slate-200 text-lg p-1">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <form id="transactionForm" class="p-5 space-y-4 overflow-y-auto">
-                <input type="hidden" id="editTransactionId" value="">
-
-                <!-- Type Selector -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Type</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <button type="button" class="type-btn border border-indigo-500 bg-indigo-950/50 text-indigo-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="expense">
-                            <i class="fa-solid fa-circle-minus"></i>
-                            <span>Expense</span>
-                        </button>
-                        <button type="button" class="type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="income">
-                            <i class="fa-solid fa-circle-plus"></i>
-                            <span>Income</span>
-                        </button>
-                        <button type="button" class="type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1" data-value="savings">
-                            <i class="fa-solid fa-piggy-bank"></i>
-                            <span>Savings</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Payment Mode Dropdown (Shows ONLY when type is Expense) -->
-                <div id="paymentModeContainer">
-                    <label for="paymentMode" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
-                    <select id="paymentMode" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-                        <option value="" disabled selected>Select Payment Mode</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Credit Card">Credit Card</option>
-                        <option value="UPI">UPI</option>
-                    </select>
-                </div>
-
-                <!-- Dynamic Category Dropdown (Adapts to Expense, Income, or Savings) -->
-                <div>
-                    <label for="category" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Category</label>
-                    <select id="category" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                        <!-- Dynamic options loaded via JS -->
-                    </select>
-                </div>
-
-                <!-- Title Input -->
-                <div>
-                    <label for="title" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Title / Note</label>
-                    <input type="text" id="title" placeholder="e.g. Swiggy Order, Monthly Salary, Mutual Fund" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
-                </div>
-
-                <!-- Amount Input -->
-                <div>
-                    <label for="amount" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Amount (₹)</label>
-                    <input type="number" step="any" id="amount" placeholder="0.00" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
-                </div>
-
-                <!-- Date Input -->
-                <div>
-                    <label for="date" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Date</label>
-                    <input type="date" id="date" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
-                </div>
-
-                <!-- Save Button -->
-                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30">
-                    Save Transaction
+        <!-- Transaction Form -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-lg font-bold mb-4">Add Transaction</h2>
+            <form id="transactionForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="date" id="tDate" required class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                <input type="text" id="tTitle" placeholder="Title (e.g. Salary, Groceries)" required class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                <select id="tType" class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                    <option value="savings">Savings</option>
+                </select>
+                <input type="text" id="tCategory" placeholder="Category (e.g. Food, Rent)" class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                <select id="tMode" class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                    <option value="UPI">UPI</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Card">Card</option>
+                    <option value="Net Banking">Net Banking</option>
+                </select>
+                <input type="number" id="tAmount" placeholder="Amount (INR)" required class="p-2.5 border border-slate-200 rounded-xl focus:outline-indigo-500">
+                <button type="submit" class="md:col-span-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 rounded-xl shadow transition">
+                    Add Transaction
                 </button>
             </form>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="p-5 border-b border-slate-100">
+                <h2 class="text-lg font-bold">Transaction History</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-500 text-xs uppercase font-semibold">
+                            <th class="p-4">#</th>
+                            <th class="p-4">Date</th>
+                            <th class="p-4">Title</th>
+                            <th class="p-4">Type</th>
+                            <th class="p-4">Category</th>
+                            <th class="p-4">Mode</th>
+                            <th class="p-4 text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTable" class="divide-y divide-slate-100 text-sm">
+                        <!-- Rows injected dynamically via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <!-- Application Script -->
     <script>
-        // Category Options Configuration
-        const categoryOptions = {
-            expense: [
-                "Food & Dining",
-                "Groceries",
-                "Transportation",
-                "Utilities & Bills",
-                "Shopping",
-                "Entertainment",
-                "Health & Medical",
-                "Education",
-                "Other Expense"
-            ],
-            income: [
-                "Salary",
-                "Freelance & Side Business",
-                "Investments & Dividends",
-                "Rental Income",
-                "Gifts & Allowances",
-                "Other Income"
-            ],
-            savings: [
-                "Emergency Fund",
-                "Mutual Funds & Stocks",
-                "Fixed Deposit (FD/RD)",
-                "Gold & Real Estate",
-                "Crypto & Digital Assets",
-                "Retirement Savings",
-                "Other Savings"
-            ]
-        };
-
-        let transactions = JSON.parse(localStorage.getItem('rupeetrack_transactions')) || [];
-        let selectedType = 'expense';
-        let chartInstance = null;
+        // State Array
+        let transactions = JSON.parse(localStorage.getItem('rupeetrack_tx')) || [
+            { date: '2026-03-28', title: 'Monthly Salary', type: 'income', category: 'Salary', paymentMode: 'Net Banking', amount: 65000 },
+            { date: '2026-03-29', title: 'Grocery Shopping', type: 'expense', category: 'Food', paymentMode: 'UPI', amount: 3200 },
+            { date: '2026-03-30', title: 'Fixed Deposit', type: 'savings', category: 'Investment', paymentMode: 'Net Banking', amount: 10000 }
+        ];
 
         // DOM Elements
-        const modal = document.getElementById('transactionModal');
-        const openModalBtn = document.getElementById('openModalBtn');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-        const transactionForm = document.getElementById('transactionForm');
-        const typeBtns = document.querySelectorAll('.type-btn');
-        const listElement = document.getElementById('transactionList');
-        const paymentModeContainer = document.getElementById('paymentModeContainer');
-        const paymentModeSelect = document.getElementById('paymentMode');
-        const categorySelect = document.getElementById('category');
+        const form = document.getElementById('transactionForm');
+        const tableBody = document.getElementById('transactionTable');
 
-        // Initial Splash Screen Timer
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                splash.classList.add('opacity-0');
-                setTimeout(() => splash.style.display = 'none', 700);
-            }, 1800);
-        });
-
-        // App Initialization
+        // Initial Load
         document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('date').valueAsDate = new Date();
-            updateUIForType('expense');
-            renderApp();
+            document.getElementById('tDate').valueAsDate = new Date();
+            renderUI();
         });
 
-        // Modal Controls
-        openModalBtn.addEventListener('click', () => openModal());
-        closeModalBtn.addEventListener('click', () => closeModal());
-
-        function openModal(editItem = null) {
-            transactionForm.reset();
-            document.getElementById('date').valueAsDate = new Date();
-            
-            if (editItem) {
-                document.getElementById('modalTitle').textContent = 'Edit Transaction';
-                document.getElementById('editTransactionId').value = editItem.id;
-                document.getElementById('title').value = editItem.title;
-                document.getElementById('amount').value = editItem.amount;
-                if (editItem.rawDate) document.getElementById('date').value = editItem.rawDate;
-                
-                setType(editItem.type, editItem.category, editItem.paymentMode);
-            } else {
-                document.getElementById('modalTitle').textContent = 'Add Transaction';
-                document.getElementById('editTransactionId').value = '';
-                setType('expense');
-            }
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() {
-            modal.classList.add('hidden');
-        }
-
-        // Handle Type Switching & UI Adjustments
-        typeBtns.forEach(btn => {
-            btn.addEventListener('click', () => setType(btn.dataset.value));
-        });
-
-        function setType(type, currentCategory = '', currentPaymentMode = '') {
-            selectedType = type;
-            
-            typeBtns.forEach(btn => {
-                if (btn.dataset.value === type) {
-                    btn.className = "type-btn border border-indigo-500 bg-indigo-950/50 text-indigo-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
-                } else {
-                    btn.className = "type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
-                }
-            });
-
-            updateUIForType(type, currentCategory, currentPaymentMode);
-        }
-
-        function updateUIForType(type, currentCategory = '', currentPaymentMode = '') {
-            // 1. Show Payment Mode only for Expense
-            if (type === 'expense') {
-                paymentModeContainer.classList.remove('hidden');
-                paymentModeSelect.required = true;
-                paymentModeSelect.value = currentPaymentMode || '';
-            } else {
-                paymentModeContainer.classList.add('hidden');
-                paymentModeSelect.required = false;
-                paymentModeSelect.value = '';
-            }
-
-            // 2. Load Categories for Selected Type
-            const categories = categoryOptions[type] || [];
-            categorySelect.innerHTML = `<option value="" disabled ${!currentCategory ? 'selected' : ''}>Select ${type.charAt(0).toUpperCase() + type.slice(1)} Category</option>`;
-            
-            categories.forEach(cat => {
-                const opt = document.createElement('option');
-                opt.value = cat;
-                opt.textContent = cat;
-                if (cat === currentCategory) opt.selected = true;
-                categorySelect.appendChild(opt);
-            });
-        }
-
-        // Form Submission
-        transactionForm.addEventListener('submit', (e) => {
+        // Form Submit Listener
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
-
-            const editId = document.getElementById('editTransactionId').value;
-            const dateInputVal = document.getElementById('date').value;
-            const formattedDate = dateInputVal ? new Date(dateInputVal).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN');
-
-            const itemData = {
-                id: editId ? Number(editId) : Date.now(),
-                title: document.getElementById('title').value.trim(),
-                amount: parseFloat(document.getElementById('amount').value),
-                type: selectedType,
-                category: categorySelect.value,
-                paymentMode: selectedType === 'expense' ? paymentModeSelect.value : '',
-                date: formattedDate,
-                rawDate: dateInputVal
+            const newTx = {
+                date: document.getElementById('tDate').value,
+                title: document.getElementById('tTitle').value,
+                type: document.getElementById('tType').value,
+                category: document.getElementById('tCategory').value || 'General',
+                paymentMode: document.getElementById('tMode').value,
+                amount: parseFloat(document.getElementById('tAmount').value) || 0
             };
-
-            if (editId) {
-                transactions = transactions.map(t => t.id === Number(editId) ? itemData : t);
-            } else {
-                transactions.unshift(itemData);
-            }
-
-            saveAndRender();
-            closeModal();
+            transactions.push(newTx);
+            localStorage.setItem('rupeetrack_tx', JSON.stringify(transactions));
+            form.reset();
+            document.getElementById('tDate').valueAsDate = new Date();
+            renderUI();
         });
 
-        function saveAndRender() {
-            localStorage.setItem('rupeetrack_transactions', JSON.stringify(transactions));
-            renderApp();
-        }
+        // Render UI Data
+        function renderUI() {
+            tableBody.innerHTML = '';
+            let income = 0, expense = 0, savings = 0;
 
-        function renderApp() {
-            renderTotals();
-            renderList();
-            renderChart();
-        }
+            transactions.forEach((t, idx) => {
+                if (t.type === 'income') income += t.amount;
+                if (t.type === 'expense') expense += t.amount;
+                if (t.type === 'savings') savings += t.amount;
 
-        // Totals Calculation
-        function renderTotals() {
-            const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-            const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-            const savings = transactions.filter(t => t.type === 'savings').reduce((sum, t) => sum + t.amount, 0);
-            const balance = income - expense - savings;
-
-            document.getElementById('totalIncome').textContent = `₹${income.toLocaleString('en-IN')}`;
-            document.getElementById('totalExpense').textContent = `₹${expense.toLocaleString('en-IN')}`;
-            document.getElementById('totalSavings').textContent = `₹${savings.toLocaleString('en-IN')}`;
-            document.getElementById('netBalance').textContent = `₹${balance.toLocaleString('en-IN')}`;
-            document.getElementById('transactionCount').textContent = `${transactions.length} items`;
-        }
-
-        // Render List
-        function renderList() {
-            if (transactions.length === 0) {
-                listElement.innerHTML = `
-                    <div class="p-8 text-center text-slate-500 bg-slate-800/40 rounded-2xl border border-slate-700/40">
-                        <i class="fa-solid fa-receipt text-3xl mb-2 block text-slate-600"></i>
-                        <p class="text-xs">No transactions recorded yet.</p>
-                    </div>`;
-                return;
-            }
-
-            listElement.innerHTML = transactions.map(t => {
-                const isExpense = t.type === 'expense';
-                const isSavings = t.type === 'savings';
-                const colorClass = isExpense ? 'text-rose-400' : (isSavings ? 'text-sky-400' : 'text-emerald-400');
-                const sign = isExpense ? '-' : '+';
-
-                return `
-                    <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl flex items-center justify-between hover:border-slate-600 transition">
-                        <div class="space-y-1">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-bold text-sm text-slate-100">${t.title}</span>
-                                ${t.paymentMode ? `<span class="text-[10px] font-semibold uppercase bg-slate-700 text-slate-300 px-2 py-0.5 rounded-md border border-slate-600">${t.paymentMode}</span>` : ''}
-                            </div>
-                            <div class="text-[11px] text-slate-400 flex items-center space-x-2">
-                                <span>${t.date}</span>
-                                <span>•</span>
-                                <span class="uppercase tracking-wider font-semibold text-slate-400">${t.category || t.type}</span>
-                            </div>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <span class="font-extrabold text-sm ${colorClass}">
-                                ${sign}₹${t.amount.toLocaleString('en-IN')}
-                            </span>
-                            <button onclick="editItem(${t.id})" class="text-slate-400 hover:text-indigo-400 text-xs p-1">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-400 text-xs p-1">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
-                        </div>
-                    </div>
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-50/50 transition";
+                row.innerHTML = `
+                    <td class="p-4 text-slate-400">${idx + 1}</td>
+                    <td class="p-4">${t.date}</td>
+                    <td class="p-4 font-medium">${t.title}</td>
+                    <td class="p-4">
+                        <span class="px-2 py-1 rounded-md text-xs font-semibold ${
+                            t.type === 'income' ? 'bg-emerald-100 text-emerald-700' :
+                            t.type === 'expense' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700'
+                        }">
+                            ${t.type.toUpperCase()}
+                        </span>
+                    </td>
+                    <td class="p-4">${t.category || 'General'}</td>
+                    <td class="p-4">${t.paymentMode || 'N/A'}</td>
+                    <td class="p-4 text-right font-semibold">Rs. ${t.amount.toLocaleString('en-IN')}</td>
                 `;
-            }).join('');
-        }
-
-        // Render Chart.js
-        function renderChart() {
-            const ctx = document.getElementById('analyticsChart').getContext('2d');
-            
-            const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-            const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-            const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
-
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
-            if (income === 0 && expense === 0 && savings === 0) {
-                ctx.clearRect(0, 0, 300, 200);
-                return;
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Income', 'Expense', 'Savings'],
-                    datasets: [{
-                        data: [income, expense, savings],
-                        backgroundColor: ['#10b981', '#f43f5e', '#0284c7'],
-                        borderWidth: 2,
-                        borderColor: '#0f172a'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 11, weight: '600' },
-                                boxWidth: 12,
-                                padding: 15
-                            }
-                        }
-                    }
-                }
+                tableBody.appendChild(row);
             });
+
+            document.getElementById('totalIncome').innerText = `Rs. ${income.toLocaleString('en-IN')}`;
+            document.getElementById('totalExpense').innerText = `Rs. ${expense.toLocaleString('en-IN')}`;
+            document.getElementById('totalSavings').innerText = `Rs. ${savings.toLocaleString('en-IN')}`;
         }
 
-        // Edit Item
-        window.editItem = function(id) {
-            const t = transactions.find(item => item.id === id);
-            if (t) openModal(t);
-        };
+        // --- EXPORT FUNCTIONS WITH NATIVE ANDROID SUPPORT ---
 
-        // Delete Item
-        window.deleteItem = function(id) {
-            if (confirm("Delete this transaction?")) {
-                transactions = transactions.filter(t => t.id !== id);
-                saveAndRender();
+        // Helper function to save file natively in Android APK or fallback to Web Browser
+        function saveReportFile(base64Data, fileName, mimeType) {
+            if (window.AndroidApp && window.AndroidApp.downloadBase64File) {
+                window.AndroidApp.downloadBase64File(base64Data, fileName, mimeType);
+            } else {
+                const link = document.createElement('a');
+                link.href = base64Data;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             }
-        };
+        }
 
         // Export to Excel
         window.exportToExcel = function() {
@@ -532,7 +206,13 @@
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "RupeeTrack Statement");
-            XLSX.writeFile(wb, `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+            const mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            const base64Uri = `data:${mimeType};base64,${wbout}`;
+            const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+            saveReportFile(base64Uri, fileName, mimeType);
         };
 
         // Export to PDF
@@ -545,7 +225,7 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Title Header
+            // Header Title
             doc.setFont("helvetica", "bold");
             doc.setFontSize(16);
             doc.setTextColor(79, 70, 229);
@@ -556,7 +236,7 @@
             doc.setTextColor(100);
             doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 14, 26);
 
-            // Statement Totals
+            // Calculations
             const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
             const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
             const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
@@ -564,8 +244,8 @@
             doc.setTextColor(50);
             doc.text(`Income: Rs.${income.toLocaleString('en-IN')}  |  Expenses: Rs.${expense.toLocaleString('en-IN')}  |  Savings: Rs.${savings.toLocaleString('en-IN')}`, 14, 33);
 
-            // Data Table
-            const tableBody = transactions.map((t, idx) => [
+            // Table Data
+            const tableData = transactions.map((t, idx) => [
                 idx + 1,
                 t.date,
                 t.title,
@@ -578,13 +258,17 @@
             doc.autoTable({
                 startY: 38,
                 head: [['#', 'Date', 'Title', 'Type', 'Category', 'Mode', 'Amount']],
-                body: tableBody,
+                body: tableData,
                 theme: 'grid',
                 headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' },
                 styles: { fontSize: 8 }
             });
 
-            doc.save(`RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`);
+            const mimeType = 'application/pdf';
+            const base64Uri = doc.output('datauristring');
+            const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+
+            saveReportFile(base64Uri, fileName, mimeType);
         };
     </script>
 </body>
