@@ -40,7 +40,7 @@
 </head>
 <body class="bg-slate-900 text-slate-100 min-h-screen font-sans antialiased pb-24">
 
-    <!-- App Opening Splash Screen with Animated Rupee Symbol -->
+    <!-- Splash Screen -->
     <div id="splashScreen" class="fixed inset-0 z-50 bg-slate-900 flex flex-col items-center justify-center transition-opacity duration-700">
         <div class="relative flex items-center justify-center mb-5">
             <div class="w-28 h-28 rounded-full bg-indigo-600/20 border-2 border-indigo-500/40 flex items-center justify-center animate-ping"></div>
@@ -233,8 +233,10 @@
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
-                splash.classList.add('opacity-0');
-                setTimeout(() => splash.style.display = 'none', 700);
+                if (splash) {
+                    splash.classList.add('opacity-0');
+                    setTimeout(() => splash.style.display = 'none', 700);
+                }
             }, 1800);
         });
 
@@ -322,7 +324,7 @@
             };
 
             if (editId) {
-                transactions = transactions.map(t => t.id === Number(editId) ? itemData : t);
+                transactions = transactions.map(t => String(t.id) === String(editId) ? itemData : t);
             } else {
                 transactions.unshift(itemData);
             }
@@ -337,7 +339,7 @@
         }
 
         window.clearAllData = function() {
-            if (transactions.length === 0) {
+            if (!transactions || transactions.length === 0) {
                 alert("No transactions to clear.");
                 return;
             }
@@ -401,8 +403,8 @@
                             <span class="font-extrabold text-sm ${colorClass}">
                                 ${sign}₹${t.amount.toLocaleString('en-IN')}
                             </span>
-                            <button onclick="editItem(${t.id})" class="text-slate-400 hover:text-indigo-400 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
+                            <button onclick="editItem('${t.id}')" class="text-slate-400 hover:text-indigo-400 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteItem('${t.id}')" class="text-slate-400 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -443,18 +445,18 @@
         }
 
         window.editItem = function(id) {
-            const t = transactions.find(item => item.id === id);
+            const t = transactions.find(item => String(item.id) === String(id));
             if (t) openModal(t);
         };
 
         window.deleteItem = function(id) {
-            if (confirm("Delete this transaction?")) {
-                transactions = transactions.filter(t => t.id !== id);
+            if (confirm("Are you sure you want to delete this transaction?")) {
+                transactions = transactions.filter(t => String(t.id) !== String(id));
                 saveAndRender();
             }
         };
 
-        // UNIVERSAL DOWNLOAD FUNCTION FOR ANDROID WebView & Web Browsers
+        // Universal Save/Download Function
         function saveReportFile(pureBase64, fileName, mimeType) {
             if (window.AndroidApp && window.AndroidApp.downloadBase64File) {
                 window.AndroidApp.downloadBase64File(pureBase64, fileName, mimeType);
@@ -471,7 +473,7 @@
 
         // Export to Excel
         window.exportToExcel = function() {
-            if (transactions.length === 0) {
+            if (!transactions || transactions.length === 0) {
                 alert("No transactions available to export.");
                 return;
             }
@@ -498,56 +500,64 @@
 
         // Export to PDF
         window.exportToPDF = function() {
-            if (transactions.length === 0) {
+            if (!transactions || transactions.length === 0) {
                 alert("No transactions available to export.");
                 return;
             }
 
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
+            try {
+                if (!window.jspdf) {
+                    alert("PDF library loading. Please ensure device is connected to internet.");
+                    return;
+                }
 
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(16);
-            doc.setTextColor(79, 70, 229);
-            doc.text("RupeeTrack - Statement", 14, 20);
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-            doc.setFontSize(9);
-            doc.setFont("helvetica", "normal");
-            doc.setTextColor(100);
-            doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 14, 26);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(16);
+                doc.setTextColor(79, 70, 229);
+                doc.text("RupeeTrack - Statement", 14, 20);
 
-            const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-            const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
-            const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
+                doc.setFontSize(9);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100);
+                doc.text(`Generated on: ${new Date().toLocaleDateString('en-IN')}`, 14, 26);
 
-            doc.setTextColor(50);
-            doc.text(`Income: Rs.${income.toLocaleString('en-IN')}  |  Expenses: Rs.${expense.toLocaleString('en-IN')}  |  Savings: Rs.${savings.toLocaleString('en-IN')}`, 14, 33);
+                const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+                const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+                const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
 
-            const tableBody = transactions.map((t, idx) => [
-                idx + 1,
-                t.date,
-                t.title,
-                t.type.toUpperCase(),
-                t.category || "General",
-                t.paymentMode || "N/A",
-                `Rs. ${t.amount.toLocaleString('en-IN')}`
-            ]);
+                doc.setTextColor(50);
+                doc.text(`Income: Rs.${income.toLocaleString('en-IN')}  |  Expenses: Rs.${expense.toLocaleString('en-IN')}  |  Savings: Rs.${savings.toLocaleString('en-IN')}`, 14, 33);
 
-            doc.autoTable({
-                startY: 38,
-                head: [['#', 'Date', 'Title', 'Type', 'Category', 'Mode', 'Amount']],
-                body: tableBody,
-                theme: 'grid',
-                headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' },
-                styles: { fontSize: 8 }
-            });
+                const tableBody = transactions.map((t, idx) => [
+                    idx + 1,
+                    t.date || '',
+                    (t.title || '').replace(/₹/g, 'Rs. '),
+                    (t.type || '').toUpperCase(),
+                    (t.category || "General").replace(/₹/g, 'Rs. '),
+                    t.paymentMode || "N/A",
+                    `Rs. ${Number(t.amount || 0).toLocaleString('en-IN')}`
+                ]);
 
-            // Clean pure Base64 output
-            const pureBase64 = doc.output('base64');
-            const mimeType = 'application/pdf';
-            const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+                doc.autoTable({
+                    startY: 38,
+                    head: [['#', 'Date', 'Title', 'Type', 'Category', 'Mode', 'Amount']],
+                    body: tableBody,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229], textColor: [255, 255, 255], fontStyle: 'bold' },
+                    styles: { fontSize: 8 }
+                });
 
-            saveReportFile(pureBase64, fileName, mimeType);
+                const pureBase64 = doc.output('base64');
+                const mimeType = 'application/pdf';
+                const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
+
+                saveReportFile(pureBase64, fileName, mimeType);
+            } catch (err) {
+                alert("Error generating PDF: " + err.message);
+            }
         };
     </script>
 </body>
