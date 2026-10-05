@@ -456,12 +456,17 @@
             }
         };
 
-        // Universal Save/Download Function
+       // Universal Save/Download Function (Fixed for Android Bridge)
         function saveReportFile(pureBase64, fileName, mimeType) {
+            // Clean out headers, spaces, and newline characters
+            const cleanBase64 = pureBase64
+                .replace(/^data:.*;base64,/, '')
+                .replace(/\s/g, '');
+
             if (window.AndroidApp && window.AndroidApp.downloadBase64File) {
-                window.AndroidApp.downloadBase64File(pureBase64, fileName, mimeType);
+                window.AndroidApp.downloadBase64File(cleanBase64, fileName, mimeType);
             } else {
-                const dataUri = `data:${mimeType};base64,${pureBase64}`;
+                const dataUri = `data:${mimeType};base64,${cleanBase64}`;
                 const link = document.createElement('a');
                 link.href = dataUri;
                 link.download = fileName;
@@ -481,7 +486,7 @@
                 "S.No": idx + 1,
                 "Date": t.date,
                 "Title": t.title,
-                "Type": t.type.toUpperCase(),
+                "Type": (t.type || '').toUpperCase(),
                 "Category": t.category || "General",
                 "Payment Mode": t.paymentMode || "N/A",
                 "Amount (INR)": t.amount
@@ -550,7 +555,9 @@
                     styles: { fontSize: 8 }
                 });
 
-                const pureBase64 = doc.output('base64');
+                // Get clean Data URI string and extract Base64 part
+                const dataUrl = doc.output('datauristring');
+                const pureBase64 = dataUrl.split(',')[1] || '';
                 const mimeType = 'application/pdf';
                 const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
 
