@@ -57,7 +57,6 @@
     <!-- Header Navigation -->
     <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-2.5">
-            <!-- Rupee Icon App Branding -->
             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-black text-white text-xl shadow-md shadow-indigo-600/30">₹</div>
             <h1 class="font-extrabold text-lg text-white tracking-tight">RupeeTrack</h1>
         </div>
@@ -99,22 +98,18 @@
 
         <!-- Overview Stat Cards -->
         <div class="grid grid-cols-2 gap-3">
-            <!-- Total Income -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">Total Income</span>
                 <div class="text-xl font-extrabold text-emerald-400" id="totalIncome">₹0</div>
             </div>
-            <!-- Total Expense -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-rose-400 uppercase tracking-wider block mb-1">Total Expenses</span>
                 <div class="text-xl font-extrabold text-rose-400" id="totalExpense">₹0</div>
             </div>
-            <!-- Total Savings -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-sky-400 uppercase tracking-wider block mb-1">Total Savings</span>
                 <div class="text-xl font-extrabold text-sky-400" id="totalSavings">₹0</div>
             </div>
-            <!-- Net Balance -->
             <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl">
                 <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider block mb-1">Net Balance</span>
                 <div class="text-xl font-extrabold text-indigo-400" id="netBalance">₹0</div>
@@ -141,9 +136,7 @@
         </div>
 
         <!-- Transaction List -->
-        <div id="transactionList" class="space-y-2.5">
-            <!-- Dynamic transactions load here -->
-        </div>
+        <div id="transactionList" class="space-y-2.5"></div>
     </main>
 
     <!-- Add/Edit Transaction Modal -->
@@ -160,7 +153,6 @@
             <form id="transactionForm" class="p-5 space-y-4 overflow-y-auto">
                 <input type="hidden" id="editTransactionId" value="">
 
-                <!-- Type Selector -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Type</label>
                     <div class="grid grid-cols-3 gap-2">
@@ -179,7 +171,6 @@
                     </div>
                 </div>
 
-                <!-- Payment Mode Dropdown (Shows ONLY when type is Expense) -->
                 <div id="paymentModeContainer">
                     <label for="paymentMode" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Payment Mode</label>
                     <select id="paymentMode" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
@@ -190,33 +181,26 @@
                     </select>
                 </div>
 
-                <!-- Dynamic Category Dropdown -->
                 <div>
                     <label for="category" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Category</label>
-                    <select id="category" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required>
-                        <!-- Dynamic options loaded via JS -->
-                    </select>
+                    <select id="category" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required></select>
                 </div>
 
-                <!-- Title Input -->
                 <div>
                     <label for="title" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Title / Note</label>
-                    <input type="text" id="title" placeholder="e.g. Swiggy Order, Monthly Salary, Mutual Fund" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
+                    <input type="text" id="title" placeholder="e.g. Swiggy Order, Monthly Salary" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
-                <!-- Amount Input -->
                 <div>
                     <label for="amount" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Amount (₹)</label>
                     <input type="number" step="any" id="amount" placeholder="0.00" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
-                <!-- Date Input -->
                 <div>
                     <label for="date" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1.5">Date</label>
                     <input type="date" id="date" class="w-full bg-slate-800 border border-slate-700 text-slate-200 py-2.5 px-3 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition" required />
                 </div>
 
-                <!-- Save Button -->
                 <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl text-sm transition shadow-lg shadow-indigo-600/30">
                     Save Transaction
                 </button>
@@ -224,46 +208,18 @@
         </div>
     </div>
 
-    <!-- Application Script -->
+    <!-- Application Logic -->
     <script>
-        // Category Options Configuration
         const categoryOptions = {
-            expense: [
-                "Food & Dining",
-                "Groceries",
-                "Transportation",
-                "Utilities & Bills",
-                "Shopping",
-                "Entertainment",
-                "Health & Medical",
-                "Education",
-                "Other Expense"
-            ],
-            income: [
-                "Salary",
-                "Freelance & Side Business",
-                "Investments & Dividends",
-                "Rental Income",
-                "Gifts & Allowances",
-                "Other Income"
-            ],
-            savings: [
-                "Emergency Fund",
-                "Mutual Funds & Stocks",
-                "Fixed Deposit (FD/RD)",
-                "Gold & Real Estate",
-                "Crypto & Digital Assets",
-                "Retirement Savings",
-                "Other Savings"
-            ]
+            expense: ["Food & Dining", "Groceries", "Transportation", "Utilities & Bills", "Shopping", "Entertainment", "Health & Medical", "Education", "Other Expense"],
+            income: ["Salary", "Freelance & Side Business", "Investments & Dividends", "Rental Income", "Gifts & Allowances", "Other Income"],
+            savings: ["Emergency Fund", "Mutual Funds & Stocks", "Fixed Deposit (FD/RD)", "Gold & Real Estate", "Crypto & Digital Assets", "Retirement Savings", "Other Savings"]
         };
 
-        // STARTS FRESH WITHOUT PRE-FILLED DUMMY TRANSACTIONS
         let transactions = JSON.parse(localStorage.getItem('rupeetrack_transactions')) || [];
         let selectedType = 'expense';
         let chartInstance = null;
 
-        // DOM Elements
         const modal = document.getElementById('transactionModal');
         const openModalBtn = document.getElementById('openModalBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
@@ -274,7 +230,6 @@
         const paymentModeSelect = document.getElementById('paymentMode');
         const categorySelect = document.getElementById('category');
 
-        // Splash Screen Timer
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const splash = document.getElementById('splashScreen');
@@ -283,14 +238,12 @@
             }, 1800);
         });
 
-        // App Initialization
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('date').valueAsDate = new Date();
             updateUIForType('expense');
             renderApp();
         });
 
-        // Modal Controls
         openModalBtn.addEventListener('click', () => openModal());
         closeModalBtn.addEventListener('click', () => closeModal());
 
@@ -304,7 +257,6 @@
                 document.getElementById('title').value = editItem.title;
                 document.getElementById('amount').value = editItem.amount;
                 if (editItem.rawDate) document.getElementById('date').value = editItem.rawDate;
-                
                 setType(editItem.type, editItem.category, editItem.paymentMode);
             } else {
                 document.getElementById('modalTitle').textContent = 'Add Transaction';
@@ -314,26 +266,19 @@
             modal.classList.remove('hidden');
         }
 
-        function closeModal() {
-            modal.classList.add('hidden');
-        }
+        function closeModal() { modal.classList.add('hidden'); }
 
-        // Handle Type Switching
         typeBtns.forEach(btn => {
             btn.addEventListener('click', () => setType(btn.dataset.value));
         });
 
         function setType(type, currentCategory = '', currentPaymentMode = '') {
             selectedType = type;
-            
             typeBtns.forEach(btn => {
-                if (btn.dataset.value === type) {
-                    btn.className = "type-btn border border-indigo-500 bg-indigo-950/50 text-indigo-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
-                } else {
-                    btn.className = "type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
-                }
+                btn.className = btn.dataset.value === type 
+                    ? "type-btn border border-indigo-500 bg-indigo-950/50 text-indigo-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1"
+                    : "type-btn border border-slate-700 text-slate-400 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center space-x-1";
             });
-
             updateUIForType(type, currentCategory, currentPaymentMode);
         }
 
@@ -350,7 +295,6 @@
 
             const categories = categoryOptions[type] || [];
             categorySelect.innerHTML = `<option value="" disabled ${!currentCategory ? 'selected' : ''}>Select ${type.charAt(0).toUpperCase() + type.slice(1)} Category</option>`;
-            
             categories.forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat;
@@ -360,10 +304,8 @@
             });
         }
 
-        // Form Submission
         transactionForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
             const editId = document.getElementById('editTransactionId').value;
             const dateInputVal = document.getElementById('date').value;
             const formattedDate = dateInputVal ? new Date(dateInputVal).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN');
@@ -394,13 +336,12 @@
             renderApp();
         }
 
-        // Clear All Transactions Function
         window.clearAllData = function() {
             if (transactions.length === 0) {
                 alert("No transactions to clear.");
                 return;
             }
-            if (confirm("Are you sure you want to clear all transactions? This action cannot be undone.")) {
+            if (confirm("Are you sure you want to clear all transactions?")) {
                 transactions = [];
                 localStorage.removeItem('rupeetrack_transactions');
                 renderApp();
@@ -413,7 +354,6 @@
             renderChart();
         }
 
-        // Totals Calculation
         function renderTotals() {
             const income = transactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
             const expense = transactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
@@ -427,7 +367,6 @@
             document.getElementById('transactionCount').textContent = `${transactions.length} items`;
         }
 
-        // Render List
         function renderList() {
             if (transactions.length === 0) {
                 listElement.innerHTML = `
@@ -446,7 +385,7 @@
                 const sign = isExpense ? '-' : '+';
 
                 return `
-                    <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl flex items-center justify-between hover:border-slate-600 transition">
+                    <div class="bg-slate-800/60 border border-slate-700/60 p-3.5 rounded-2xl flex items-center justify-between">
                         <div class="space-y-1">
                             <div class="flex items-center space-x-2">
                                 <span class="font-bold text-sm text-slate-100">${t.title}</span>
@@ -455,37 +394,28 @@
                             <div class="text-[11px] text-slate-400 flex items-center space-x-2">
                                 <span>${t.date}</span>
                                 <span>•</span>
-                                <span class="uppercase tracking-wider font-semibold text-slate-400">${t.category || t.type}</span>
+                                <span class="uppercase font-semibold text-slate-400">${t.category || t.type}</span>
                             </div>
                         </div>
                         <div class="flex items-center space-x-3">
                             <span class="font-extrabold text-sm ${colorClass}">
                                 ${sign}₹${t.amount.toLocaleString('en-IN')}
                             </span>
-                            <button onclick="editItem(${t.id})" class="text-slate-400 hover:text-indigo-400 text-xs p-1">
-                                <i class="fa-solid fa-pen"></i>
-                            </button>
-                            <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-400 text-xs p-1">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                            <button onclick="editItem(${t.id})" class="text-slate-400 hover:text-indigo-400 text-xs p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteItem(${t.id})" class="text-slate-400 hover:text-rose-400 text-xs p-1"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // Render Chart.js
         function renderChart() {
             const ctx = document.getElementById('analyticsChart').getContext('2d');
-            
             const income = transactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
             const expense = transactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
             const savings = transactions.filter(t => t.type === 'savings').reduce((s, t) => s + t.amount, 0);
 
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
+            if (chartInstance) chartInstance.destroy();
             if (income === 0 && expense === 0 && savings === 0) {
                 ctx.clearRect(0, 0, 300, 200);
                 return;
@@ -506,27 +436,17 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 11, weight: '600' },
-                                boxWidth: 12,
-                                padding: 15
-                            }
-                        }
+                        legend: { position: 'bottom', labels: { color: '#94a3b8', font: { family: 'Inter', size: 11, weight: '600' }, boxWidth: 12, padding: 15 } }
                     }
                 }
             });
         }
 
-        // Edit Item
         window.editItem = function(id) {
             const t = transactions.find(item => item.id === id);
             if (t) openModal(t);
         };
 
-        // Delete Item
         window.deleteItem = function(id) {
             if (confirm("Delete this transaction?")) {
                 transactions = transactions.filter(t => t.id !== id);
@@ -534,13 +454,14 @@
             }
         };
 
-        // UNIVERSAL DOWNLOAD FUNCTION FOR ANDROID APK & BROWSERS
-        function saveReportFile(base64Data, fileName, mimeType) {
+        // UNIVERSAL DOWNLOAD FUNCTION FOR ANDROID WebView & Web Browsers
+        function saveReportFile(pureBase64, fileName, mimeType) {
             if (window.AndroidApp && window.AndroidApp.downloadBase64File) {
-                window.AndroidApp.downloadBase64File(base64Data, fileName, mimeType);
+                window.AndroidApp.downloadBase64File(pureBase64, fileName, mimeType);
             } else {
+                const dataUri = `data:${mimeType};base64,${pureBase64}`;
                 const link = document.createElement('a');
-                link.href = base64Data;
+                link.href = dataUri;
                 link.download = fileName;
                 document.body.appendChild(link);
                 link.click();
@@ -568,12 +489,11 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "RupeeTrack Statement");
 
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+            const pureBase64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
             const mimeType = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-            const base64Uri = `data:${mimeType};base64,${wbout}`;
             const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-            saveReportFile(base64Uri, fileName, mimeType);
+            saveReportFile(pureBase64, fileName, mimeType);
         };
 
         // Export to PDF
@@ -622,11 +542,12 @@
                 styles: { fontSize: 8 }
             });
 
+            // Clean pure Base64 output
+            const pureBase64 = doc.output('base64');
             const mimeType = 'application/pdf';
-            const base64Uri = doc.output('datauristring');
             const fileName = `RupeeTrack_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
 
-            saveReportFile(base64Uri, fileName, mimeType);
+            saveReportFile(pureBase64, fileName, mimeType);
         };
     </script>
 </body>
